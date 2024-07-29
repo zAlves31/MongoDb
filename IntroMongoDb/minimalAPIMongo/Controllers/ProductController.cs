@@ -66,6 +66,27 @@ namespace minimalAPIMongo.Controllers
             return StatusCode(201);
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Product>> GetById(string id)
+        {
+            try
+            {
+                var filter = Builders<Product>.Filter.Eq(p => p.id, id);
 
+
+                var product = await _product.Find(filter).FirstOrDefaultAsync();
+
+                if (product == null)
+                {
+                    return NotFound(new { Message = "Produto não encontrado" });
+                }
+
+                return Ok(product);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { Message = e.Message });
+            }
+        }
     }
 }
