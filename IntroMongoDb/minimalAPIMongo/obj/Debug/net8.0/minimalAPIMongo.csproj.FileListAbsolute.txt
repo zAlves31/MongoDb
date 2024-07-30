@@ -89,3 +89,4 @@ C:\Users\52546124870\Desktop\MongoDb\IntroMongoDb\minimalAPIMongo\obj\Debug\net8
 C:\Users\52546124870\Desktop\MongoDb\IntroMongoDb\minimalAPIMongo\obj\Debug\net8.0\minimalAPIMongo.pdb
 C:\Users\52546124870\Desktop\MongoDb\IntroMongoDb\minimalAPIMongo\obj\Debug\net8.0\minimalAPIMongo.genruntimeconfig.cache
 C:\Users\52546124870\Desktop\MongoDb\IntroMongoDb\minimalAPIMongo\obj\Debug\net8.0\ref\minimalAPIMongo.dll
+C:\Users\52546124870\Desktop\MongoDb\IntroMongoDb\minimalAPIMongo\bin\Debug\net8.0\BCrypt.Net-Next.dll

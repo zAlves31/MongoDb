@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BCrypt.Net; // Adiciona a biblioteca BCrypt
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using minimalAPIMongo.Domains;
 using minimalAPIMongo.Services;
+using minimalAPIMongo.ViewModels;
 using MongoDB.Driver;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace minimalAPIMongo.Controllers
 {
@@ -13,17 +18,13 @@ namespace minimalAPIMongo.Controllers
     {
         private readonly IMongoCollection<User> _user;
 
-        /// <summary>
-        /// Construtor que recebe como dependencia o obj da classe MongoDbService
-        /// </summary>
-        /// <param name="mongoDbService"></param>
         public UserController(MongoDbService mongoDbService)
         {
             _user = mongoDbService.GetDatabase.GetCollection<User>("user");
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> Get()
+        public async Task<ActionResult<List<User>>> Get()
         {
             try
             {
@@ -41,6 +42,8 @@ namespace minimalAPIMongo.Controllers
         {
             try
             {
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
                 await _user.InsertOneAsync(user);
                 return StatusCode(201, user);
             }
@@ -54,16 +57,33 @@ namespace minimalAPIMongo.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             var user = await _user.FindOneAndDeleteAsync(x => x.id == id);
+            if (user == null)
+            {
+                return NotFound(new { Message = "Usuário não encontrado" });
+            }
 
-            return StatusCode(201);
+            return StatusCode(204); 
         }
 
-        [HttpPut]
-        public async Task<ActionResult<User>> UpdateObject(User p)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<User>> UpdateObject(string id, UserUpdateViewModel updatedUser)
         {
-            await _user.ReplaceOneAsync(x => x.id == p.id, p);
+            var existingUser = await _user.Find(x => x.id == id).FirstOrDefaultAsync();
+            if (existingUser == null)
+            {
+                return NotFound(new { Message = "Usuário não encontrado" });
+            }
 
-            return StatusCode(201);
+            existingUser.Name = updatedUser.Name;
+            existingUser.Email = updatedUser.Email;
+
+            if (!string.IsNullOrEmpty(updatedUser.Password))
+            {
+                existingUser.Password = BCrypt.Net.BCrypt.HashPassword(updatedUser.Password);
+            }
+
+            await _user.ReplaceOneAsync(x => x.id == id, existingUser);
+            return Ok(existingUser);
         }
 
         [HttpGet("{id}")]
@@ -71,17 +91,35 @@ namespace minimalAPIMongo.Controllers
         {
             try
             {
-                var filter = Builders<User>.Filter.Eq(p => p.id, id);
+                var filter = Builders<User>.Filter.Eq(u => u.id, id);
+                var user = await _user.Find(filter).FirstOrDefaultAsync();
 
-
-                var product = await _user.Find(filter).FirstOrDefaultAsync();
-
-                if (product == null)
+                if (user == null)
                 {
-                    return NotFound(new { Message = "Produto não encontrado" });
+                    return NotFound(new { Message = "Usuário não encontrado" });
                 }
 
-                return Ok(product);
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { Message = e.Message });
+            }
+        }
+
+        [HttpPost("authenticate")]
+        public async Task<ActionResult> Authenticate(string email, string password)
+        {
+            try
+            {
+                var user = await _user.Find(u => u.Email == email).FirstOrDefaultAsync();
+
+                if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
+                {
+                    return Unauthorized(new { Message = "Credenciais inválidas" });
+                }
+
+                return Ok(new { Message = "Autenticação bem-sucedida" });
             }
             catch (Exception e)
             {

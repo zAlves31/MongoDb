@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "qm2TQ344gynB0PJe+CZGmoDvc11IDgwRy6m0qQC8szPT4Nscn1zOYdsQL00uhMxDbYE2MV6sDV0j2TjEFNrZYg==",
+  "dgSpecHash": "0n56Z40wMXXXdLY5R5mXNNKlBOKzotqH49n1vGABt5dBv5lLPssYL/Y/Jl5SOhJsb2hMTB6H70tMux3A6ouMNg==",
   "success": true,
   "projectFilePath": "C:\\Users\\52546124870\\Desktop\\MongoDb\\IntroMongoDb\\minimalAPIMongo\\minimalAPIMongo.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\52546124870\\.nuget\\packages\\awssdk.core\\3.7.100.14\\awssdk.core.3.7.100.14.nupkg.sha512",
     "C:\\Users\\52546124870\\.nuget\\packages\\awssdk.securitytoken\\3.7.100.14\\awssdk.securitytoken.3.7.100.14.nupkg.sha512",
+    "C:\\Users\\52546124870\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\52546124870\\.nuget\\packages\\dnsclient\\1.6.1\\dnsclient.1.6.1.nupkg.sha512",
     "C:\\Users\\52546124870\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "C:\\Users\\52546124870\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\2.0.0\\microsoft.extensions.logging.abstractions.2.0.0.nupkg.sha512",
