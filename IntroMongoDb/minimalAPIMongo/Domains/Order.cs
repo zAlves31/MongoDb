@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.AspNetCore.Http;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
 
@@ -11,27 +12,31 @@ namespace minimalAPIMongo.Domains
         public string? Id { get; set; }
 
         [BsonElement("date")]
-        public DateTime Date { get; set; }
+        public DateOnly Date { get; set; }
 
         [BsonElement("status")]
         public string? Status { get; set; }
 
-        [BsonElement("products")]
-        public List<ProductReference> Products { get; set; } = new List<ProductReference>();
 
-        [BsonElement("client")]
+
+        [BsonElement("clientId")]
         [BsonRepresentation(BsonType.ObjectId)]
         public string? ClientId { get; set; }
 
-        public class ProductReference
-        {
+        [BsonElement("client")]
+        public Client? Client { get; set; }
+
+
+
+
+        
             [BsonElement("productId")]
             [BsonRepresentation(BsonType.ObjectId)]
-            public string? ProductId { get; set; }
+            public List<string>? ProductId { get; set; }
 
-            [BsonElement("quantity")]
-            public int Quantity { get; set; }
-        }
+            [BsonElement("Product")]
+            public List<Product>? Products { get; set; }
+       
 
 
         [BsonElement("additionalAttributes")]

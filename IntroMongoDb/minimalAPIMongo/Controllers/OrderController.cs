@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using minimalAPIMongo.Domains;
 using minimalAPIMongo.Services;
+using minimalAPIMongo.ViewModels;
 using MongoDB.Driver;
 
 namespace minimalAPIMongo.Controllers
@@ -11,10 +12,14 @@ namespace minimalAPIMongo.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IMongoCollection<Order> _order;
+        private readonly IMongoCollection<Client> _client;
+        private readonly IMongoCollection<Product> _product;
 
         public OrderController(MongoDbService mongoDbService)
         {
             _order = mongoDbService.GetDatabase.GetCollection<Order>("order");
+            _client = mongoDbService.GetDatabase.GetCollection<Client>("client");
+            _product = mongoDbService.GetDatabase.GetCollection<Product>("product");
         }
 
         [HttpGet]
@@ -32,12 +37,44 @@ namespace minimalAPIMongo.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(Order order)
+        public async Task<ActionResult> Create(OrderViewModel newOrder)
         {
             try
             {
+                Order order = new Order();
+                order.Id = newOrder.Id;
+                order.Date = newOrder.Date;
+                order.Status = newOrder.Status;
+                order.ProductId = newOrder.ProductId;
+                order.ClientId = newOrder.ClientId;
+
+                var clientOwner = _client.Find(c => c.Id == newOrder.ClientId).FirstOrDefaultAsync();
+
+                if (clientOwner is not null)
+                {
+                    order.Client = await clientOwner;
+                }
+                else
+                {
+                    return NotFound("Cliente nao encontrado");
+                }
+
+                var lista = new List<Product>();
+
+                foreach (var productId in newOrder.ProductId!)
+                {
+                    var item = _product.Find(p => p.id == productId).FirstOrDefault();
+
+                    if (item is not null)
+                    {
+                        lista.Add(item);
+                    }
+                }
+
+                order.Products = lista;
+
                 await _order.InsertOneAsync(order);
-                return StatusCode(201, order);
+                return StatusCode(204);
             }
             catch (Exception e)
             {
@@ -57,7 +94,7 @@ namespace minimalAPIMongo.Controllers
                     return NotFound(new { Message = "Order not found" });
                 }
 
-                return StatusCode(204); // No Content
+                return StatusCode(204); 
             }
             catch (Exception e)
             {
